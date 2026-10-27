@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MONEY AZ - Plataforma de Investimentos</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+dark: {
+900: '#0B0F17',
+800: '#151C2C',
+700: '#1E293B',
+600: '#334155'
+},
+gold: {
+400: '#FACC15',
+500: '#EAB308',
+600: '#CA8A04'
+}
+},
+fontFamily: {
+sans: ['Plus Jakarta Sans', 'sans-serif'],
+}
+}
+}
+}
+</script>
+<style>
+body {
+font-family: 'Plus Jakarta Sans', sans-serif;
+background-color: #0B0F17;
+color: #F8FAFC;
+-webkit-tap-highlight-color: transparent;
+}
+.gold-gradient-text {
+background: linear-gradient(135deg, #FFE57F 0%, #EAB308 50%, #A16207 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+.gold-btn-gradient {
+background: linear-gradient(135deg, #FDE047 0%, #EAB308 50%, #CA8A04 100%);
+}
+.gold-btn-gradient:active {
+opacity: 0.9;
+transform: scale(0.98);
+}
+.glass-card {
+background: rgba(21, 28, 44, 0.85);
+backdrop-filter: blur(14px);
+border: 1px solid rgba(234, 179, 8, 0.15);
+}
+.glass-card-hover:hover {
+border-color: rgba(234, 179, 8, 0.4);
+transform: translateY(-2px);
+transition: all 0.2s ease;
+}
+::-webkit-scrollbar {
+width: 4px;
+}
+::-webkit-scrollbar-track {
+background: #0B0F17;
+}
+::-webkit-scrollbar-thumb {
+background: #334155;
+border-radius: 4px;
+}
+</style>
+</head>
+<body class="min-h-screen pb-20 selection:bg-gold-500 selection:text-dark-900">
+<!-- TOP HEADER -->
+<header class="sticky top-0 z-30 bg-dark-900/90 backdrop-blur-md border-b border-gray-800/80 px-4 py-3">
+<div class="max-w-md mx-auto flex justify-between items-center">
+<div class="flex items-center gap-2">
+<div class="w-9 h-9 rounded-xl gold-btn-gradient flex items-center justify-center font-extrabold text-dark-900 shadow-md shadow-gold-500/10">
+AZ
+</div>
+<div>
+<h1 class="font-extrabold text-base tracking-tight gold-gradient-text">MONEY AZ</h1>
+<p class="text-[10px] text-gray-400 font-medium">Investimentos Inteligentes</p>
+</div>
+</div>
+<div id="header-user-badge" class="hidden items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-gray-700/60">
+<i class="fas fa-wallet text-gold-500 text-xs"></i>
+<span id="user-top-balance" class="text-xs font-bold text-gold-400">0 Kz</span>
+</div>
+</div>
+</header>
+<!-- NOTIFICATION TOAST CONTAINER -->
+<div id="toast-container" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-sm pointer-events-none space-y-2"></div>
+<!-- MAIN CONTAINER -->
+<div class="max-w-md mx-auto min-h-[calc(100vh-130px)]">
+<!-- ================= ECRÃ DE AUTENTICAÇÃO (MANDATÓRIO NA PRIMEIRA CARGA) ================= -->
+<section id="auth-screen" class="p-5 my-4">
+<div class="glass-card p-6 rounded-3xl text-center relative overflow-hidden shadow-2xl">
+<div class="absolute -top-12 -right-12 w-36 h-36 bg-gold-500/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-12 -left-12 w-36 h-36 bg-gold-500/10 rounded-full blur-3xl"></div>
+<div class="w-16 h-16 mx-auto rounded-2xl gold-btn-gradient flex items-center justify-center font-black text-dark-900 text-3xl mb-3 shadow-lg shadow-gold-500/20">
+AZ
+</div>
+<h2 class="text-xl font-black text-white">Aceder à Plataforma</h2>
+<p class="text-xs text-gray-400 mt-1 mb-6">Registe-se ou inicie sessão para gerir os seus investimentos.</p>
+<!-- Auth Selector Tabs -->
+<div class="flex bg-dark-800/90 p-1.5 rounded-xl mb-6 border border-gray-700/50">
+<button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-gold-500 text-dark-900 shadow-md transition-all">Entrar</button>
+<button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all">Criar Conta</button>
+</div>
+<!-- Formular de Login -->
+<form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 text-left">
+<div>
+<label class="text-[11px] font-semibold text-gray-300 mb-1 block">Número de Telefone</label>
+<div class="relative">
+<span class="absolute left-3.5 top-3 text-gray-400 text-sm font-semibold">+244</span>
+<input type="tel" id="login-phone" required placeholder="9XXXXXXXX" maxlength="9" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 pl-16 pr-3 text-sm focus:border-gold-500 focus:outline-none text-white transition">
+</div>
+</div>
+<div>
+<label class="text-[11px] font-semibold text-gray-300 mb-1 block">Palavra-passe</label>
+<input type="password" id="login-pass" required placeholder="••••••••" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3.5 text-sm focus:border-gold-500 focus:outline-none text-white transition">
+</div>
+<button type="submit" class="w-full py-3.5 rounded-xl gold-btn-gradient text-dark-900 font-extrabold text-sm shadow-lg shadow-gold-500/20 mt-2">
+Entrar na Minha Conta <i class="fas fa-arrow-right ml-1"></i>
+</button>
+</form>
+<!-- Formulario de Registo -->
+<form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 text-left hidden">
+<div>
+<label class="text-[11px] font-semibold text-gray-300 mb-1 block">Nome Completo</label>
+<input type="text" id="reg-name" required placeholder="Ex: Manuel Silva" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3.5 text-sm focus:border-gold-500 focus:outline-none text-white transition">
+</div>
+<div>
+<label class="text-[11px] font-semibold text-gray-300 mb-1 block">Número de Telefone</label>
+<div class="relative">
+<span class="absolute left-3.5 top-3 text-gray-400 text-sm font-semibold">+244</span>
+<input type="tel" id="reg-phone" required placeholder="9XXXXXXXX" maxlength="9" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 pl-16 pr-3 text-sm focus:border-gold-500 focus:outline-none text-white transition">
+</div>
+</div>
+<div>
+<label class="text-[11px] font-semibold text-gray-300 mb-1 block">Criar Palavra-passe</label>
+<input type="password" id="reg-pass" required placeholder="••••••••" minlength="4" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3.5 text-sm focus:border-gold-500 focus:outline-none text-white transition">
+</div>
+<button type="submit" class="w-full py-3.5 rounded-xl gold-btn-gradient text-dark-900 font-extrabold text-sm shadow-lg shadow-gold-500/20 mt-2">
+Registar e Continuar <i class="fas fa-check-circle ml-1"></i>
+</button>
+</form>
+</div>
+</section>
+<!-- ================= APP CONTENT CONTAINER (ESCONDIDO ATÉ LOGIN) ================= -->
+<main id="app-content" class="p-4 space-y-5 hidden">
+<!-- SEPARADOR: INÍCIO / PACOTES -->
+<section id="tab-home" class="tab-page space-y-4">
+<!-- User Balance Card -->
+<div class="glass-card p-5 rounded-3xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-xs text-gray-400 font-medium">Saldo Total Disponível</p>
+<h3 id="user-balance-card" class="text-2xl font-black text-white mt-0.5">0 Kz</h3>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-gold-500/10 border border-gold-500/30 text-[10px] font-bold text-gold-400">
+Conta Ativa
+</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-3 border-t border-gray-800">
+<button onclick="switchTab('tab-deposit')" class="flex flex-col items-center justify-center p-2 rounded-xl bg-dark-800 hover:bg-dark-700 transition">
+<i class="fas fa-arrow-down text-emerald-400 text-sm mb-1"></i>
+<span class="text-[11px] font-bold text-gray-200">Depositar</span>
+</button>
+<button onclick="switchTab('tab-withdraw')" class="flex flex-col items-center justify-center p-2 rounded-xl bg-dark-800 hover:bg-dark-700 transition">
+<i class="fas fa-arrow-up text-amber-400 text-sm mb-1"></i>
+<span class="text-[11px] font-bold text-gray-200">Levantar</span>
+</button>
+<button onclick="switchTab('tab-tasks')" class="flex flex-col items-center justify-center p-2 rounded-xl bg-dark-800 hover:bg-dark-700 transition">
+<i class="fas fa-tasks text-gold-400 text-sm mb-1"></i>
+<span class="text-[11px] font-bold text-gray-200">Tarefas</span>
+</button>
+</div>
+</div>
+<!-- Section Banner -->
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-extrabold text-base text-white">Planos de Investimento</h3>
+<p class="text-xs text-gray-400">Escolha o plano ideal para maximizar os seus lucros</p>
+</div>
+<span class="text-xs font-bold text-gold-400 bg-gold-500/10 px-2.5 py-1 rounded-lg border border-gold-500/20">
+15 Níveis
+</span>
+</div>
+<!-- Dynamic Packages Container -->
+<div id="investment-packages-container" class="grid grid-cols-1 gap-3.5">
+<!-- Rendered dynamically -->
+</div>
+</section>
+<!-- SEPARADOR: TAREFAS DIÁRIAS -->
+<section id="tab-tasks" class="tab-page hidden space-y-4">
+<div class="glass-card p-5 rounded-3xl">
+<h3 class="font-black text-lg text-white">Tarefas Diárias Recompensadas</h3>
+<p class="text-xs text-gray-400 mt-0.5">Complete tarefas simples para ganhar saldo instantâneo.</p>
+<div class="space-y-3 mt-4">
+<!-- Task 1 -->
+<div class="p-3.5 rounded-2xl bg-dark-800/80 border border-gray-800 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+<i class="fas fa-calendar-check"></i>
+</div>
+<div>
+<h4 class="text-xs font-bold text-white">Check-in Diário</h4>
+<p id="task-reward-checkin-text" class="text-[11px] font-extrabold text-gold-400">+500 Kz</p>
+</div>
+</div>
+<button id="task-btn-checkin" onclick="completeTask('checkin')" class="px-3 py-1.5 rounded-xl bg-gold-500 text-dark-900 font-extrabold text-xs shadow-md">
+Reclamar
+</button>
+</div>
+<!-- Task 2 -->
+<div class="p-3.5 rounded-2xl bg-dark-800/80 border border-gray-800 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+<i class="fab fa-whatsapp"></i>
+</div>
+<div>
+<h4 class="text-xs font-bold text-white">Partilhar no WhatsApp</h4>
+<p id="task-reward-share-text" class="text-[11px] font-extrabold text-gold-400">+1.000 Kz</p>
+</div>
+</div>
+<button id="task-btn-share" onclick="completeTask('share')" class="px-3 py-1.5 rounded-xl bg-gold-500 text-dark-900 font-extrabold text-xs shadow-md">
+Partilhar
+</button>
+</div>
+<!-- Task 3 -->
+<div class="p-3.5 rounded-2xl bg-dark-800/80 border border-gray-800 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
+<i class="fas fa-play-circle"></i>
+</div>
+<div>
+<h4 class="text-xs font-bold text-white">Ver Anúncio Promocional</h4>
+<p id="task-reward-ad-text" class="text-[11px] font-extrabold text-gold-400">+750 Kz</p>
+</div>
+</div>
+<button id="task-btn-ad" onclick="startAdTask()" class="px-3 py-1.5 rounded-xl bg-gold-500 text-dark-900 font-extrabold text-xs shadow-md">
+Assistir
+</button>
+</div>
+<!-- Task 4 -->
+<div class="p-3.5 rounded-2xl bg-dark-800/80 border border-gray-800 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
+<i class="fas fa-users"></i>
+</div>
+<div>
+<h4 class="text-xs font-bold text-white">Aderir à Comunidade</h4>
+<p id="task-reward-group-text" class="text-[11px] font-extrabold text-gold-400">+1.500 Kz</p>
+</div>
+</div>
+<button id="task-btn-group" onclick="joinCommunityAndClaimTask()" class="px-3 py-1.5 rounded-xl bg-gold-500 text-dark-900 font-extrabold text-xs shadow-md">
+Entrar
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SEPARADOR: DEPÓSITO -->
+<section id="tab-deposit" class="tab-page hidden space-y-4">
+<div class="glass-card p-5 rounded-3xl">
+<h3 class="font-black text-lg text-white">Efetuar Depósito</h3>
+<p class="text-xs text-gray-400 mt-0.5 mb-4">Selecione o método de pagamento e envie o comprovativo.</p>
+<!-- Payment Methods Display (Dynamic Realtime) -->
+<div class="space-y-3 mb-5">
+<div class="p-3.5 rounded-2xl bg-dark-800 border border-gray-700">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-bold text-emerald-400"><i class="fas fa-mobile-alt mr-1"></i> PayPay AO</span>
+<button onclick="copyToClipboard(window.appSettings.paypayNumber, 'Contacto PayPay')" class="text-[10px] font-bold text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded">Copiar</button>
+</div>
+<p id="disp-paypay-num" class="text-sm font-extrabold text-white">923 000 000</p>
+<p id="disp-paypay-holder" class="text-[10px] text-gray-400">Titular: MONEY AZ Oficial</p>
+</div>
+<div class="p-3.5 rounded-2xl bg-dark-800 border border-gray-700">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-bold text-blue-400"><i class="fas fa-university mr-1"></i> Multicaixa Express (IBAN)</span>
+<button onclick="copyToClipboard(window.appSettings.expressIban, 'IBAN Express')" class="text-[10px] font-bold text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded">Copiar</button>
+</div>
+<p id="disp-express-iban" class="text-xs font-mono font-bold text-white">AO06 0040 0000 1234 5678 9012 3</p>
+<p id="disp-express-holder" class="text-[10px] text-gray-400">Banco: BAI | Titular: MONEY AZ</p>
+</div>
+<div class="p-3.5 rounded-2xl bg-dark-800 border border-gray-700">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-bold text-purple-400"><i class="fas fa-barcode mr-1"></i> Referência Automática</span>
+<button onclick="copyToClipboard(`Entidade: ${window.appSettings.refEntity} | Ref: ${window.appSettings.refNumber}`, 'Referência')" class="text-[10px] font-bold text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded">Copiar</button>
+</div>
+<p id="disp-ref-code" class="text-xs font-mono font-bold text-white">Entidade: 00542 | Ref: 984 102</p>
+</div>
+</div>
+<!-- Deposit Form -->
+<form onsubmit="handleDepositSubmit(event)" class="space-y-3.5 pt-2 border-t border-gray-800">
+<div>
+<label class="text-[11px] font-semibold text-gray-300 block mb-1">Valor a Depositar (Kz)</label>
+<input type="number" id="deposit-amount" min="1000" required placeholder="Ex: 7500" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3.5 text-sm text-white focus:border-gold-500 focus:outline-none">
+</div>
+<div>
+<label class="text-[11px] font-semibold text-gray-300 block mb-1">Método Utilizado</label>
+<select id="deposit-method" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3 text-sm text-white focus:border-gold-500 focus:outline-none">
+<option value="PayPay AO">PayPay AO</option>
+<option value="Multicaixa Express">Multicaixa Express</option>
+<option value="Pagamento por Referência">Pagamento por Referência</option>
+</select>
+</div>
+<div>
+<label class="text-[11px] font-semibold text-gray-300 block mb-1">Número de Transação / Comprovativo</label>
+<input type="text" id="deposit-proof" required placeholder="Cole o código do comprovativo" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3.5 text-sm text-white focus:border-gold-500 focus:outline-none">
+</div>
+<button type="submit" class="w-full py-3.5 rounded-xl gold-btn-gradient text-dark-900 font-extrabold text-sm shadow-lg shadow-gold-500/20">
+Submeter Depósito para Aprovação
+</button>
+</form>
+</div>
+<!-- Deposit History -->
+<div class="glass-card p-5 rounded-3xl">
+<h4 class="font-extrabold text-sm text-white mb-3">Os Meus Depósitos</h4>
+<div id="user-deposits-list" class="space-y-2 text-xs">
+<!-- Loaded dynamically -->
+</div>
+</div>
+</section>
+<!-- SEPARADOR: LEVANTAMENTO -->
+<section id="tab-withdraw" class="tab-page hidden space-y-4">
+<div class="glass-card p-5 rounded-3xl">
+<h3 class="font-black text-lg text-white">Solicitar Levantamento</h3>
+<p class="text-xs text-gray-400 mt-0.5 mb-4">Retire os seus ganhos diretamente para a sua conta bancária.</p>
+<form onsubmit="handleWithdrawSubmit(event)" class="space-y-3.5">
+<div>
+<label class="text-[11px] font-semibold text-gray-300 block mb-1">Valor do Levantamento (Kz)</label>
+<input type="number" id="withdraw-amount" min="1000" required placeholder="Mínimo 1.000 Kz" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3.5 text-sm text-white focus:border-gold-500 focus:outline-none">
+</div>
+<div>
+<label class="text-[11px] font-semibold text-gray-300 block mb-1">IBAN da sua Conta Bancária</label>
+<input type="text" id="withdraw-iban" required placeholder="AO06 0000 ..." class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3.5 text-sm text-white focus:border-gold-500 focus:outline-none">
+</div>
+<div>
+<label class="text-[11px] font-semibold text-gray-300 block mb-1">Nome do Titular da Conta</label>
+<input type="text" id="withdraw-holder" required placeholder="Nome Completo" class="w-full bg-dark-800 border border-gray-700 rounded-xl py-2.5 px-3.5 text-sm text-white focus:border-gold-500 focus:outline-none">
+</div>
+<button type="submit" class="w-full py-3.5 rounded-xl gold-btn-gradient text-dark-900 font-extrabold text-sm shadow-lg shadow-gold-500/20">
+Solicitar Levantamento
+</button>
+</form>
+</div>
+</section>
+<!-- SEPARADOR: PERFIL / SUPORTE -->
+<section id="tab-profile" class="tab-page hidden space-y-4">
+<div class="glass-card p-5 rounded-3xl text-center">
+<div class="w-16 h-16 mx-auto rounded-full bg-gold-500/10 border-2 border-gold-500 flex items-center justify-center text-gold-400 text-2xl font-bold mb-2">
+<i class="fas fa-user"></i>
+</div>
+<h3 id="profile-name" class="font-black text-lg text-white">---</h3>
+<p id="profile-phone" class="text-xs text-gray-400">+244 --- --- ---</p>
+<div class="grid grid-cols-2 gap-3 mt-4 text-left">
+<div class="p-3 bg-dark-800 rounded-xl border border-gray-800">
+<span class="text-[10px] text-gray-400">Saldo Atual</span>
+<p id="profile-balance" class="text-sm font-extrabold text-gold-400">0 Kz</p>
+</div>
+<div class="p-3 bg-dark-800 rounded-xl border border-gray-800">
+<span class="text-[10px] text-gray-400">Planos Ativos</span>
+<p id="profile-active-plans" class="text-sm font-extrabold text-emerald-400">0</p>
+</div>
+</div>
+<div class="space-y-2 mt-5">
+<a id="profile-community-link" href="#" target="_blank" class="w-full py-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold text-xs flex items-center justify-center gap-2">
+<i class="fab fa-whatsapp text-sm"></i> Grupo Oficial da Comunidade
+</a>
+<!-- Secure Discreete Admin Trigger Button -->
+<button onclick="openAdminModal()" class="w-full py-3 rounded-xl bg-dark-800/80 hover:bg-dark-700 border border-gray-800 text-gray-400 font-bold text-xs flex items-center justify-center gap-2">
+<i class="fas fa-shield-alt text-gold-500"></i> Painel de Administração
+</button>
+<button onclick="handleLogout()" class="w-full py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 font-bold text-xs flex items-center justify-center gap-2">
+<i class="fas fa-sign-out-alt"></i> Encerrar Sessão
+</button>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- ================= MODAL ADMIN (PROTECÇÃO E CONTROLO RIGOROSO) ================= -->
+<div id="admin-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+<div class="glass-card w-full max-w-lg rounded-3xl p-5 max-h-[92vh] overflow-y-auto relative border border-gold-500/30">
+<button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg">
+<i class="fas fa-times"></i>
+</button>
+<!-- AUTH PIN VERIFICATION SECTION -->
+<div id="admin-pin-section" class="text-center py-6 space-y-4">
+<div class="w-14 h-14 mx-auto rounded-2xl bg-gold-500/10 border border-gold-500 flex items-center justify-center text-gold-400 text-2xl shadow-lg">
+<i class="fas fa-user-shield"></i>
+</div>
+<h3 class="font-black text-lg text-white">Autenticação Estrita ADM</h3>
+<p class="text-xs text-gray-400 px-4">Introduza o PIN de segurança para aceder ao centro de controlo em tempo real.</p>
+<div class="max-w-xs mx-auto">
+<input type="password" id="admin-pin-input" placeholder="••••••" maxlength="6" class="w-full text-center text-2xl font-mono tracking-widest bg-dark-800 border border-gray-700 rounded-xl py-3 text-gold-400 focus:border-gold-500 focus:outline-none">
+</div>
+<button onclick="verifyAdminPin()" class="w-full max-w-xs mx-auto py-3.5 rounded-xl gold-btn-gradient text-dark-900 font-extrabold text-sm shadow-lg shadow-gold-500/20">
+Verificar Acesso
+</button>
+</div>
+<!-- ADM DASHBOARD FULL CONTROL PANEL -->
+<div id="admin-dashboard-section" class="hidden space-y-4">
+<div class="border-b border-gray-800 pb-3 flex justify-between items-center">
+<div>
+<h3 class="font-black text-base text-gold-400"><i class="fas fa-sliders-h mr-1"></i> Controlo Global ADM</h3>
+<p class="text-[10px] text-gray-400">Sincronização em Tempo Real na Nuvem</p>
+</div>
+<span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Ativo
+</span>
+</div>
+<!-- Admin Navigation Tabs -->
+<div class="grid grid-cols-5 bg-dark-800 p-1 rounded-xl text-[11px] font-bold gap-1 text-center">
+<button onclick="switchAdminTab('users')" id="adm-tab-users-btn" class="py-2 rounded-lg bg-gold-500 text-dark-900">Users</button>
+<button onclick="switchAdminTab('packages')" id="adm-tab-packages-btn" class="py-2 rounded-lg text-gray-400">Planos</button>
+<button onclick="switchAdminTab('payments')" id="adm-tab-payments-btn" class="py-2 rounded-lg text-gray-400">Pagos</button>
+<button onclick="switchAdminTab('deposits')" id="adm-tab-deposits-btn" class="py-2 rounded-lg text-gray-400">Depós.</button>
+<button onclick="switchAdminTab('settings')" id="adm-tab-settings-btn" class="py-2 rounded-lg text-gray-400">Config</button>
+</div>
+<!-- TAB 1: USERS MANAGEMENT -->
+<div id="adm-view-users" class="space-y-2 max-h-96 overflow-y-auto">
+<!-- Dynamic rendering -->
+</div>
+<!-- TAB 2: EDIT 15 INVESTMENT PACKAGES -->
+<div id="adm-view-packages" class="space-y-3 max-h-96 overflow-y-auto hidden">
+<p class="text-xs text-gray-400">Altere o Nome, Preço, Lucro Diário e Ciclo (Dias) de qualquer plano em tempo real:</p>
+<div id="adm-packages-editor-list" class="space-y-3">
+<!-- Dynamic -->
+</div>
+</div>
+<!-- TAB 3: PAYMENT COORDINATES -->
+<div id="adm-view-payments" class="space-y-3 hidden">
+<p class="text-xs text-gray-400">Atualize as coordenadas de recebimento mostradas aos utilizadores:</p>
+<form onsubmit="handleSavePaymentSettings(event)" class="space-y-3 text-xs">
+<div class="p-3 bg-dark-800 rounded-xl space-y-2 border border-gray-800">
+<span class="font-bold text-emerald-400">PayPay AO</span>
+<input type="text" id="adm-paypay-num" placeholder="Número PayPay" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+<input type="text" id="adm-paypay-holder" placeholder="Titular PayPay" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+</div>
+<div class="p-3 bg-dark-800 rounded-xl space-y-2 border border-gray-800">
+<span class="font-bold text-blue-400">Multicaixa Express (IBAN)</span>
+<input type="text" id="adm-express-iban" placeholder="IBAN Express" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+<input type="text" id="adm-express-holder" placeholder="Titular Banco" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+</div>
+<div class="p-3 bg-dark-800 rounded-xl space-y-2 border border-gray-800">
+<span class="font-bold text-purple-400">Pagamento por Referência</span>
+<div class="grid grid-cols-2 gap-2">
+<input type="text" id="adm-ref-entity" placeholder="Entidade" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+<input type="text" id="adm-ref-number" placeholder="Referência" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+</div>
+</div>
+<button type="submit" class="w-full py-3 rounded-xl gold-btn-gradient text-dark-900 font-extrabold text-xs shadow-md">
+Guardar Dados de Pagamento
+</button>
+</form>
+</div>
+<!-- TAB 4: DEPOSITS & WITHDRAWALS APPROVALS -->
+<div id="adm-view-deposits" class="space-y-3 max-h-96 overflow-y-auto hidden">
+<h4 class="font-bold text-xs text-gold-400">Depósitos Pendentes</h4>
+<div id="adm-deposits-list" class="space-y-2"></div>
+<h4 class="font-bold text-xs text-amber-400 pt-2 border-t border-gray-800">Levantamentos Pendentes</h4>
+<div id="adm-withdrawals-list" class="space-y-2"></div>
+</div>
+<!-- TAB 5: GLOBAL CONFIG (COMMUNITY LINK, TASK REWARDS & SECURITY PIN) -->
+<div id="adm-view-settings" class="space-y-3 hidden">
+<p class="text-xs text-gray-400">Definições globais do sistema, tarefas e PIN ADM:</p>
+<form onsubmit="handleSaveGlobalSettings(event)" class="space-y-3 text-xs">
+<div class="p-3 bg-dark-800 rounded-xl space-y-2 border border-gray-800">
+<span class="font-bold text-emerald-400"><i class="fab fa-whatsapp"></i> Link Oficial do Grupo WhatsApp</span>
+<input type="url" id="adm-community-url" required placeholder="https://chat.whatsapp.com/..." class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+</div>
+<div class="p-3 bg-dark-800 rounded-xl space-y-2 border border-gray-800">
+<span class="font-bold text-gold-400"><i class="fas fa-coins"></i> Recompensas de Tarefas (Kz)</span>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="text-[10px] text-gray-400">Check-in</label>
+<input type="number" id="adm-task-checkin" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+</div>
+<div>
+<label class="text-[10px] text-gray-400">WhatsApp</label>
+<input type="number" id="adm-task-share" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+</div>
+<div>
+<label class="text-[10px] text-gray-400">Anúncio</label>
+<input type="number" id="adm-task-ad" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+</div>
+<div>
+<label class="text-[10px] text-gray-400">Grupo</label>
+<input type="number" id="adm-task-group" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-white">
+</div>
+</div>
+</div>
+<div class="p-3 bg-dark-800 rounded-xl space-y-2 border border-gray-800">
+<span class="font-bold text-red-400"><i class="fas fa-key"></i> Alterar PIN de Administrador</span>
+<input type="password" id="adm-new-pin" maxlength="6" placeholder="Novo PIN (6 dígitos)" class="w-full bg-dark-900 border border-gray-700 rounded-lg p-2 text-gold-400 text-center font-mono">
+</div>
+<button type="submit" class="w-full py-3 rounded-xl gold-btn-gradient text-dark-900 font-extrabold text-xs shadow-md">
+Guardar Configurações Globais
+</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= NAVIGATION BAR ================= -->
+<nav id="main-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-dark-900/95 backdrop-blur-md border-t border-gray-800 z-40 py-2 px-3 hidden">
+<div class="flex justify-around items-center">
+<button onclick="switchTab('tab-home')" id="nav-tab-home" class="nav-btn flex flex-col items-center text-gold-500">
+<i class="fas fa-chart-line text-base"></i>
+<span class="text-[10px] font-bold mt-1">Investir</span>
+</button>
+<button onclick="switchTab('tab-tasks')" id="nav-tab-tasks" class="nav-btn flex flex-col items-center text-gray-500 hover:text-gold-400">
+<i class="fas fa-tasks text-base"></i>
+<span class="text-[10px] font-bold mt-1">Tarefas</span>
+</button>
+<button onclick="switchTab('tab-deposit')" id="nav-tab-deposit" class="nav-btn flex flex-col items-center text-gray-500 hover:text-gold-400">
+<i class="fas fa-wallet text-base"></i>
+<span class="text-[10px] font-bold mt-1">Depositar</span>
+</button>
+<button onclick="switchTab('tab-withdraw')" id="nav-tab-withdraw" class="nav-btn flex flex-col items-center text-gray-500 hover:text-gold-400">
+<i class="fas fa-hand-holding-usd text-base"></i>
+<span class="text-[10px] font-bold mt-1">Levantar</span>
+</button>
+<button onclick="switchTab('tab-profile')" id="nav-tab-profile" class="nav-btn flex flex-col items-center text-gray-500 hover:text-gold-400">
+<i class="fas fa-user text-base"></i>
+<span class="text-[10px] font-bold mt-1">Perfil</span>
+</button>
+</div>
+</nav>
+<!-- ================= JAVASCRIPT & FIREBASE REALTIME MODULE ================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+// Firebase Setup & Fallbacks
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'money-az-cloud-app';
+const firebaseConfig = typeof __firebase_config !== 'undefined'
+? JSON.parse(__firebase_config)
+: { apiKey: "demo", authDomain: "demo.firebaseapp.com", projectId: "demo" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+// Global Default Packages (15 Levels)
+const DEFAULT_PACKAGES = [
+{ id: 1, name: "VIP 1 - Iniciante", price: 7500, daily: 500, days: 30 },
+{ id: 2, name: "VIP 2 - Bronze", price: 15000, daily: 1000, days: 30 },
+{ id: 3, name: "VIP 3 - Prata", price: 25000, daily: 1800, days: 30 },
+{ id: 4, name: "VIP 4 - Ouro", price: 40000, daily: 3000, days: 30 },
+{ id: 5, name: "VIP 5 - Platina", price: 60000, daily: 4800, days: 30 },
+{ id: 6, name: "VIP 6 - Diamante", price: 85000, daily: 7000, days: 30 },
+{ id: 7, name: "VIP 7 - Rubia", price: 110000, daily: 9500, days: 30 },
+{ id: 8, name: "VIP 8 - Esmeralda", price: 135000, daily: 12000, days: 30 },
+{ id: 9, name: "VIP 9 - Safira", price: 160000, daily: 14500, days: 60 },
+{ id: 10, name: "VIP 10 - Titânio", price: 185000, daily: 17000, days: 60 },
+{ id: 11, name: "VIP 11 - Master", price: 210000, daily: 19500, days: 60 },
+{ id: 12, name: "VIP 12 - Elite", price: 230000, daily: 22000, days: 60 },
+{ id: 13, name: "VIP 13 - Imperial", price: 250000, daily: 24500, days: 60 },
+{ id: 14, name: "VIP 14 - Embaixador", price: 270000, daily: 27000, days: 60 },
+{ id: 15, name: "VIP 15 - AZ Supremo", price: 290000, daily: 30000, days: 60 }
+];
+// Global State Store
+window.appState = {
+currentUser: null,
+usersList: [],
+userDepositsList: [],
+withdrawalsList: [],
+activeTab: 'tab-home'
+};
+window.appSettings = {
+paypayNumber: "923 000 000",
+paypayHolder: "MONEY AZ Oficial",
+expressIban: "AO06 0040 0000 1234 5678 9012 3",
+expressHolder: "MONEY AZ - Banco BAI",
+refEntity: "00542",
+refNumber: "984 102",
+communityUrl: "https://chat.whatsapp.com/AZMONEYOFFICIAL",
+adminPin: "334476",
+taskRewards: { checkin: 500, share: 1000, ad: 750, group: 1500 },
+packages: DEFAULT_PACKAGES
+};
+// Initialize Authentication
+async function initAuth() {
+try {
+if (typeof __initial_auth_token !== 'undefined') {
+await signInWithCustomToken(auth, __initial_auth_token);
+} else {
+await signInAnonymously(auth);
+}
+} catch (err) {
+console.warn("Auth mode active:", err);
+}
+listenGlobalSettings();
+checkSavedSession();
+}
+// Realtime Listener for System Settings & Packages
+function listenGlobalSettings() {
+const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
+onSnapshot(settingsRef, (snap) => {
+if (snap.exists()) {
+const data = snap.data();
+window.appSettings = { ...window.appSettings, ...data };
+} else {
+// Initialize default global settings in cloud
+setDoc(settingsRef, window.appSettings);
+}
+updateSettingsUI();
+renderInvestmentPackages();
+});
+}
+function updateSettingsUI() {
+const s = window.appSettings;
+// Payment Coords
+document.getElementById('disp-paypay-num').innerText = s.paypayNumber;
+document.getElementById('disp-paypay-holder').innerText = ⁠Titular: ${s.paypayHolder}⁠;
+document.getElementById('disp-express-iban').innerText = s.expressIban;
+document.getElementById('disp-express-holder').innerText = s.expressHolder;
+document.getElementById('disp-ref-code').innerText = ⁠Entidade: ${s.refEntity} | Ref: ${s.refNumber}⁠;
+// Community WhatsApp Links
+const commLink = document.getElementById('profile-community-link');
+if (commLink) commLink.href = s.communityUrl || '#';
+// Task Rewards
+if (s.taskRewards) {
+document.getElementById('task-reward-checkin-text').innerText = ⁠+${(s.taskRewards.checkin || 500).toLocaleString('pt-AO')} Kz⁠;
+document.getElementById('task-reward-share-text').innerText = ⁠+${(s.taskRewards.share || 1000).toLocaleString('pt-AO')} Kz⁠;
+document.getElementById('task-reward-ad-text').innerText = ⁠+${(s.taskRewards.ad || 750).toLocaleString('pt-AO')} Kz⁠;
+document.getElementById('task-reward-group-text').innerText = ⁠+${(s.taskRewards.group || 1500).toLocaleString('pt-AO')} Kz⁠;
+}
+// Fill ADM Form fields if opened
+document.getElementById('adm-paypay-num').value = s.paypayNumber;
+document.getElementById('adm-paypay-holder').value = s.paypayHolder;
+document.getElementById('adm-express-iban').value = s.expressIban;
+document.getElementById('adm-express-holder').value = s.expressHolder;
+document.getElementById('adm-ref-entity').value = s.refEntity;
+document.getElementById('adm-ref-number').value = s.refNumber;
+document.getElementById('adm-community-url').value = s.communityUrl;
+if (s.taskRewards) {
+document.getElementById('adm-task-checkin').value = s.taskRewards.checkin;
+document.getElementById('adm-task-share').value = s.taskRewards.share;
+document.getElementById('adm-task-ad').value = s.taskRewards.ad;
+document.getElementById('adm-task-group').value = s.taskRewards.group;
+}
+}
+function checkSavedSession() {
+const savedPhone = localStorage.getItem('money_az_active_phone');
+if (savedPhone) {
+loadUserDataAndListen(savedPhone);
+} else {
+document.getElementById('auth-screen').classList.remove('hidden');
+document.getElementById('app-content').classList.add('hidden');
+document.getElementById('main-nav').classList.add('hidden');
+document.getElementById('header-user-badge').classList.add('hidden');
+}
+}
+// Listen User Account in Realtime
+function loadUserDataAndListen(phone) {
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', phone);
+onSnapshot(userRef, (snapshot) => {
+if (snapshot.exists()) {
+window.appState.currentUser = snapshot.data();
+localStorage.setItem('money_az_active_phone', phone);
+updateUserUI();
+document.getElementById('auth-screen').classList.add('hidden');
+document.getElementById('app-content').classList.remove('hidden');
+document.getElementById('main-nav').classList.remove('hidden');
+document.getElementById('header-user-badge').classList.remove('hidden');
+document.getElementById('header-user-badge').classList.add('flex');
+} else {
+handleLogout();
+}
+});
+listenUserDeposits(phone);
+}
+function listenUserDeposits(phone) {
+const depCol = collection(db, 'artifacts', appId, 'public', 'data', 'deposits');
+onSnapshot(depCol, (snapshot) => {
+const list = [];
+snapshot.forEach(docSnap => {
+const data = docSnap.data();
+if (data.userPhone === phone) list.push(data);
+});
+window.appState.userDepositsList = list;
+renderUserDeposits(list);
+});
+}
+// Render Investment Store
+function renderInvestmentPackages() {
+const container = document.getElementById('investment-packages-container');
+if (!container) return;
+const packages = window.appSettings.packages || DEFAULT_PACKAGES;
+container.innerHTML = packages.map(pkg => ⁠<div class="glass-card glass-card-hover p-4 rounded-2xl flex items-center justify-between border border-gray-800"> <div class="space-y-1"> <h4 class="font-extrabold text-sm text-white">${pkg.name}</h4> <p class="text-xs text-gray-400">Lucro Diário: <span class="font-bold text-emerald-400">${pkg.daily.toLocaleString('pt-AO')} Kz</span></p> <p class="text-[10px] text-gray-500">Ciclo: ${pkg.days} dias | Retorno: ${(pkg.daily * pkg.days).toLocaleString('pt-AO')} Kz</p> </div> <div class="text-right"> <p class="text-xs font-black text-gold-400 mb-2">${pkg.price.toLocaleString('pt-AO')} Kz</p> <button onclick="investInPackage(${pkg.id}, ${pkg.price})" class="px-3.5 py-1.5 rounded-xl gold-btn-gradient text-dark-900 font-extrabold text-xs shadow-md"> Adquirir </button> </div> </div>⁠).join('');
+}
+function updateUserUI() {
+const u = window.appState.currentUser;
+if (!u) return;
+const formattedBal = ⁠${(u.balance || 0).toLocaleString('pt-AO')} Kz⁠;
+document.getElementById('user-top-balance').innerText = formattedBal;
+document.getElementById('user-balance-card').innerText = formattedBal;
+document.getElementById('profile-name').innerText = u.name || 'Investidor';
+document.getElementById('profile-phone').innerText = ⁠+244 ${u.phone}⁠;
+document.getElementById('profile-balance').innerText = formattedBal;
+document.getElementById('profile-active-plans').innerText = (u.activePlans || []).length;
+}
+function renderUserDeposits(list) {
+const container = document.getElementById('user-deposits-list');
+if (!container) return;
+if (list.length === 0) {
+container.innerHTML = ⁠<p class="text-gray-500 text-center py-2">Sem histórico de depósitos.</p>⁠;
+return;
+}
+container.innerHTML = list.map(d => {
+let statusBadge = ⁠<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400">Pendente</span>⁠;
+if (d.status === 'Approved') statusBadge = ⁠<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400">Aprovado</span>⁠;
+if (d.status === 'Rejected') statusBadge = ⁠<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-400">Rejeitado</span>⁠;
+return ⁠<div class="p-2.5 bg-dark-800 rounded-xl flex justify-between items-center border border-gray-800"> <div> <p class="font-bold text-white">${d.amount.toLocaleString('pt-AO')} Kz</p> <p class="text-[10px] text-gray-400">${d.method} • Ref: ${d.proof}</p> </div> <div>${statusBadge}</div> </div>⁠;
+}).join('');
+}
+// Authentication Handlers
+window.switchAuthTab = function(tab) {
+const loginForm = document.getElementById('login-form');
+const regForm = document.getElementById('register-form');
+const loginBtn = document.getElementById('tab-login-btn');
+const regBtn = document.getElementById('tab-register-btn');
+if (tab === 'login') {
+loginForm.classList.remove('hidden');
+regForm.classList.add('hidden');
+loginBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-gold-500 text-dark-900 shadow-md transition-all";
+regBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all";
+} else {
+loginForm.classList.add('hidden');
+regForm.classList.remove('hidden');
+regBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-gold-500 text-dark-900 shadow-md transition-all";
+loginBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all";
+}
+};
+window.handleLogin = async function(e) {
+e.preventDefault();
+const phone = document.getElementById('login-phone').value.trim();
+const pass = document.getElementById('login-pass').value;
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', phone);
+const userSnap = await getDoc(userRef);
+if (userSnap.exists()) {
+const userData = userSnap.data();
+if (userData.pass === pass) {
+showToast("Sessão iniciada com sucesso!", "check-circle");
+loadUserDataAndListen(phone);
+} else {
+showToast("Palavra-passe incorreta.", "exclamation-triangle");
+}
+} else {
+showToast("Conta não encontrada. Por favor registe-se.", "info-circle");
+}
+};
+window.handleRegister = async function(e) {
+e.preventDefault();
+const name = document.getElementById('reg-name').value.trim();
+const phone = document.getElementById('reg-phone').value.trim();
+const pass = document.getElementById('reg-pass').value;
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', phone);
+const userSnap = await getDoc(userRef);
+if (userSnap.exists()) {
+showToast("Número já registado na plataforma.", "exclamation-circle");
+return;
+}
+// NOVA CONTA COM SALDO INICIAL RIGOROSAMENTE A 0 KZ
+const newUser = {
+name: name,
+phone: phone,
+pass: pass,
+balance: 0,
+activePlans: [],
+completedTasks: [],
+createdAt: new Date().toISOString()
+};
+await setDoc(userRef, newUser);
+showToast("Conta criada com sucesso!", "check-circle");
+loadUserDataAndListen(phone);
+};
+window.handleLogout = function() {
+localStorage.removeItem('money_az_active_phone');
+window.appState.currentUser = null;
+document.getElementById('auth-screen').classList.remove('hidden');
+document.getElementById('app-content').classList.add('hidden');
+document.getElementById('main-nav').classList.add('hidden');
+document.getElementById('header-user-badge').classList.add('hidden');
+showToast("Sessão encerrada.", "info-circle");
+};
+// Navigation
+window.switchTab = function(tabId) {
+document.querySelectorAll('.tab-page').forEach(el => el.classList.add('hidden'));
+document.getElementById(tabId).classList.remove('hidden');
+window.appState.activeTab = tabId;
+document.querySelectorAll('.nav-btn').forEach(btn => {
+btn.className = "nav-btn flex flex-col items-center text-gray-500 hover:text-gold-400";
+});
+const activeNav = document.getElementById(⁠nav-${tabId}⁠);
+if (activeNav) activeNav.className = "nav-btn flex flex-col items-center text-gold-500";
+};
+// Financial Actions
+window.investInPackage = async function(pkgId, price) {
+const u = window.appState.currentUser;
+if (!u) return;
+if (u.balance < price) {
+showToast("Saldo insuficiente. Faça um depósito primeiro.", "wallet");
+switchTab('tab-deposit');
+return;
+}
+const updatedBalance = u.balance - price;
+const updatedPlans = u.activePlans || [];
+updatedPlans.push({ pkgId: pkgId, date: new Date().toISOString() });
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', u.phone);
+await updateDoc(userRef, {
+balance: updatedBalance,
+activePlans: updatedPlans
+});
+showToast("Plano ativado com sucesso!", "check-double");
+};
+window.handleDepositSubmit = async function(e) {
+e.preventDefault();
+const u = window.appState.currentUser;
+if (!u) return;
+const amount = parseFloat(document.getElementById('deposit-amount').value);
+const method = document.getElementById('deposit-method').value;
+const proof = document.getElementById('deposit-proof').value.trim();
+const depRef = collection(db, 'artifacts', appId, 'public', 'data', 'deposits');
+await addDoc(depRef, {
+userPhone: u.phone,
+userName: u.name,
+amount: amount,
+method: method,
+proof: proof,
+status: 'Pending',
+createdAt: new Date().toISOString()
+});
+document.getElementById('deposit-amount').value = '';
+document.getElementById('deposit-proof').value = '';
+showToast("Depósito submetido! Aguarde a aprovação do ADM.", "clock");
+};
+window.handleWithdrawSubmit = async function(e) {
+e.preventDefault();
+const u = window.appState.currentUser;
+if (!u) return;
+// REGRA ESTRITA: VERIFICAÇÃO SE POSSUI PELO MENOS 1 DEPÓSITO APROVADO PELO ADM
+const approvedDeposits = (window.appState.userDepositsList || []).filter(d => d.status === 'Approved');
+if (approvedDeposits.length === 0) {
+showToast("Para realizar o seu primeiro levantamento, é necessário ter pelo menos 1 depósito confirmado/aprovado na plataforma.", "lock");
+return;
+}
+const amount = parseFloat(document.getElementById('withdraw-amount').value);
+const iban = document.getElementById('withdraw-iban').value.trim();
+const holder = document.getElementById('withdraw-holder').value.trim();
+if (u.balance < amount) {
+showToast("Saldo disponível insuficiente.", "exclamation-triangle");
+return;
+}
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', u.phone);
+await updateDoc(userRef, { balance: u.balance - amount });
+const withRef = collection(db, 'artifacts', appId, 'public', 'data', 'withdrawals');
+await addDoc(withRef, {
+userPhone: u.phone,
+userName: u.name,
+amount: amount,
+iban: iban,
+holder: holder,
+status: 'Pending',
+createdAt: new Date().toISOString()
+});
+document.getElementById('withdraw-amount').value = '';
+showToast("Solicitação de levantamento enviada com sucesso!", "check-circle");
+};
+// Tasks Handlers
+window.completeTask = async function(taskId) {
+const u = window.appState.currentUser;
+if (!u) return;
+const reward = (window.appSettings.taskRewards && window.appSettings.taskRewards[taskId]) || 500;
+const completed = u.completedTasks || [];
+if (completed.includes(taskId)) {
+showToast("Já concluiu esta tarefa hoje.", "info-circle");
+return;
+}
+completed.push(taskId);
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', u.phone);
+await updateDoc(userRef, {
+balance: u.balance + reward,
+completedTasks: completed
+});
+showToast(⁠Recompensa de +${reward.toLocaleString('pt-AO')} Kz creditada!⁠, "coins");
+};
+window.startAdTask = function() {
+showToast("A carregar anúncio promocional (5s)...", "play");
+setTimeout(() => {
+completeTask('ad');
+}, 3000);
+};
+window.joinCommunityAndClaimTask = function() {
+const url = window.appSettings.communityUrl || '#';
+window.open(url, '_blank');
+completeTask('group');
+};
+// ================= ADMIN MODULE (STRICT SECURITY & ADVANCED CONTROL) =================
+window.openAdminModal = function() {
+document.getElementById('admin-modal').classList.remove('hidden');
+document.getElementById('admin-pin-section').classList.remove('hidden');
+document.getElementById('admin-dashboard-section').classList.add('hidden');
+document.getElementById('admin-pin-input').value = '';
+};
+window.closeAdminModal = function() {
+document.getElementById('admin-modal').classList.add('hidden');
+document.getElementById('admin-pin-section').classList.remove('hidden');
+document.getElementById('admin-dashboard-section').classList.add('hidden');
+};
+window.verifyAdminPin = function() {
+const enteredPin = document.getElementById('admin-pin-input').value.trim();
+const expectedPin = window.appSettings.adminPin || "334476";
+if (enteredPin === expectedPin) {
+document.getElementById('admin-pin-section').classList.add('hidden');
+document.getElementById('admin-dashboard-section').classList.remove('hidden');
+listenGlobalAdminData();
+renderAdminPackagesEditor();
+showToast("Acesso ADM Concedido", "unlock");
+} else {
+showToast("PIN de Acesso Incorreto", "lock");
+}
+};
+function listenGlobalAdminData() {
+// Users
+const usersCol = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+onSnapshot(usersCol, (snap) => {
+const list = [];
+snap.forEach(d => list.push(d.data()));
+renderAdminUsers(list);
+});
+// Deposits
+const depCol = collection(db, 'artifacts', appId, 'public', 'data', 'deposits');
+onSnapshot(depCol, (snap) => {
+const list = [];
+snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+renderAdminDeposits(list);
+});
+// Withdrawals
+const withCol = collection(db, 'artifacts', appId, 'public', 'data', 'withdrawals');
+onSnapshot(withCol, (snap) => {
+const list = [];
+snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+renderAdminWithdrawals(list);
+});
+}
+// Render ADM User Controls
+function renderAdminUsers(list) {
+const container = document.getElementById('adm-view-users');
+container.innerHTML = list.map(u => ⁠<div class="p-3 bg-dark-800 rounded-xl border border-gray-700 text-xs space-y-2"> <div class="flex justify-between items-center"> <span class="font-bold text-white">${u.name}</span> <span class="font-bold text-gold-400">${(u.balance || 0).toLocaleString('pt-AO')} Kz</span> </div> <p class="text-[10px] text-gray-400">Tel: +244 ${u.phone} | Pass: ${u.pass}</p> <div class="flex gap-2"> <button onclick="admUpdateBalance('${u.phone}', 5000)" class="flex-1 py-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold text-[10px]">+5.000 Kz</button> <button onclick="admUpdateBalance('${u.phone}', -5000)" class="flex-1 py-1 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold text-[10px]">-5.000 Kz</button> <button onclick="admDeleteUser('${u.phone}')" class="py-1 px-2 rounded bg-red-500/20 text-red-400 border border-red-500/30 font-bold text-[10px]"><i class="fas fa-trash"></i></button> </div> </div>⁠).join('');
+}
+window.admUpdateBalance = async function(phone, delta) {
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', phone);
+const userSnap = await getDoc(userRef);
+if (userSnap.exists()) {
+const currentBal = userSnap.data().balance || 0;
+await updateDoc(userRef, { balance: Math.max(0, currentBal + delta) });
+showToast("Saldo atualizado pelo ADM", "check");
+}
+};
+window.admDeleteUser = async function(phone) {
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', phone);
+await deleteDoc(userRef);
+showToast("Conta eliminada pelo ADM", "trash");
+};
+// Render ADM Packages Editor (15 Tiers)
+function renderAdminPackagesEditor() {
+const container = document.getElementById('adm-packages-editor-list');
+const packages = window.appSettings.packages || DEFAULT_PACKAGES;
+container.innerHTML = packages.map((pkg, idx) => ⁠<div class="p-3 bg-dark-800 rounded-xl border border-gray-700 text-xs space-y-2"> <div class="flex justify-between items-center"> <span class="font-extrabold text-gold-400">Pacote #${pkg.id}</span> <button onclick="saveSinglePackage(${idx})" class="px-2.5 py-1 rounded bg-gold-500 text-dark-900 font-extrabold text-[10px]">Guardar Alteração</button> </div> <div> <label class="text-[10px] text-gray-400 block">Nome do Pacote</label> <input type="text" id="pkg-name-${idx}" value="${pkg.name}" class="w-full bg-dark-900 border border-gray-700 rounded p-1.5 text-white"> </div> <div class="grid grid-cols-3 gap-2"> <div> <label class="text-[10px] text-gray-400 block">Preço (Kz)</label> <input type="number" id="pkg-price-${idx}" value="${pkg.price}" class="w-full bg-dark-900 border border-gray-700 rounded p-1.5 text-white"> </div> <div> <label class="text-[10px] text-gray-400 block">Diário (Kz)</label> <input type="number" id="pkg-daily-${idx}" value="${pkg.daily}" class="w-full bg-dark-900 border border-gray-700 rounded p-1.5 text-white"> </div> <div> <label class="text-[10px] text-gray-400 block">Dias</label> <input type="number" id="pkg-days-${idx}" value="${pkg.days}" class="w-full bg-dark-900 border border-gray-700 rounded p-1.5 text-white"> </div> </div> </div>⁠).join('');
+}
+window.saveSinglePackage = async function(idx) {
+const packages = [...(window.appSettings.packages || DEFAULT_PACKAGES)];
+packages[idx] = {
+id: packages[idx].id,
+name: document.getElementById(⁠pkg-name-${idx}⁠).value.trim(),
+price: parseFloat(document.getElementById(⁠pkg-price-${idx}⁠).value),
+daily: parseFloat(document.getElementById(⁠pkg-daily-${idx}⁠).value),
+days: parseInt(document.getElementById(⁠pkg-days-${idx}⁠).value)
+};
+const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
+await updateDoc(settingsRef, { packages: packages });
+showToast(⁠Pacote ${packages[idx].name} atualizado!⁠, "check-double");
+};
+// Render ADM Pending Deposits & Withdrawals
+function renderAdminDeposits(list) {
+const container = document.getElementById('adm-deposits-list');
+const pending = list.filter(d => d.status === 'Pending');
+if (pending.length === 0) {
+container.innerHTML = ⁠<p class="text-gray-500 text-[11px]">Nenhum depósito pendente.</p>⁠;
+return;
+}
+container.innerHTML = pending.map(d => ⁠<div class="p-2.5 bg-dark-800 rounded-xl border border-gray-700 text-xs space-y-1"> <div class="flex justify-between font-bold text-white"> <span>${d.userName} (${d.userPhone})</span> <span class="text-emerald-400">${d.amount.toLocaleString('pt-AO')} Kz</span> </div> <p class="text-[10px] text-gray-400">${d.method} • Ref: ${d.proof}</p> <div class="flex gap-2 pt-1"> <button onclick="processDeposit('${d.id}', '${d.userPhone}', ${d.amount}, 'Approved')" class="flex-1 py-1 rounded bg-emerald-500 text-dark-900 font-extrabold text-[10px]">Aprovar</button> <button onclick="processDeposit('${d.id}', '${d.userPhone}', 0, 'Rejected')" class="flex-1 py-1 rounded bg-red-500 text-white font-extrabold text-[10px]">Rejeitar</button> </div> </div>⁠).join('');
+}
+function renderAdminWithdrawals(list) {
+const container = document.getElementById('adm-withdrawals-list');
+const pending = list.filter(w => w.status === 'Pending');
+if (pending.length === 0) {
+container.innerHTML = ⁠<p class="text-gray-500 text-[11px]">Nenhum levantamento pendente.</p>⁠;
+return;
+}
+container.innerHTML = pending.map(w => ⁠<div class="p-2.5 bg-dark-800 rounded-xl border border-gray-700 text-xs space-y-1"> <div class="flex justify-between font-bold text-white"> <span>${w.userName}</span> <span class="text-amber-400">${w.amount.toLocaleString('pt-AO')} Kz</span> </div> <p class="text-[10px] text-gray-400">IBAN: ${w.iban} (${w.holder})</p> <div class="flex gap-2 pt-1"> <button onclick="processWithdrawal('${w.id}', 'Approved')" class="flex-1 py-1 rounded bg-emerald-500 text-dark-900 font-extrabold text-[10px]">Concluir</button> <button onclick="processWithdrawal('${w.id}', 'Rejected', '${w.userPhone}', ${w.amount})" class="flex-1 py-1 rounded bg-red-500 text-white font-extrabold text-[10px]">Rejeitar & Reembolsar</button> </div> </div>⁠).join('');
+}
+window.processDeposit = async function(depId, userPhone, amount, status) {
+const depRef = doc(db, 'artifacts', appId, 'public', 'data', 'deposits', depId);
+await updateDoc(depRef, { status: status });
+if (status === 'Approved') {
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', userPhone);
+const userSnap = await getDoc(userRef);
+if (userSnap.exists()) {
+const currentBal = userSnap.data().balance || 0;
+await updateDoc(userRef, { balance: currentBal + amount });
+}
+}
+showToast(⁠Depósito ${status}!⁠, "check");
+};
+window.processWithdrawal = async function(withDocId, status, userPhone = null, amount = 0) {
+const withRef = doc(db, 'artifacts', appId, 'public', 'data', 'withdrawals', withDocId);
+await updateDoc(withRef, { status: status });
+if (status === 'Rejected' && userPhone) {
+const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', userPhone);
+const userSnap = await getDoc(userRef);
+if (userSnap.exists()) {
+const currentBal = userSnap.data().balance || 0;
+await updateDoc(userRef, { balance: currentBal + amount });
+}
+}
+showToast(⁠Levantamento ${status}!⁠, "check");
+};
+// Save Payment Settings Form
+window.handleSavePaymentSettings = async function(e) {
+e.preventDefault();
+const payload = {
+paypayNumber: document.getElementById('adm-paypay-num').value.trim(),
+paypayHolder: document.getElementById('adm-paypay-holder').value.trim(),
+expressIban: document.getElementById('adm-express-iban').value.trim(),
+expressHolder: document.getElementById('adm-express-holder').value.trim(),
+refEntity: document.getElementById('adm-ref-entity').value.trim(),
+refNumber: document.getElementById('adm-ref-number').value.trim()
+};
+const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
+await updateDoc(settingsRef, payload);
+showToast("Dados de pagamento atualizados na nuvem!", "save");
+};
+// Save Global Settings Form
+window.handleSaveGlobalSettings = async function(e) {
+e.preventDefault();
+const communityUrl = document.getElementById('adm-community-url').value.trim();
+const newPin = document.getElementById('adm-new-pin').value.trim();
+const taskRewards = {
+checkin: parseFloat(document.getElementById('adm-task-checkin').value),
+share: parseFloat(document.getElementById('adm-task-share').value),
+ad: parseFloat(document.getElementById('adm-task-ad').value),
+group: parseFloat(document.getElementById('adm-task-group').value)
+};
+const payload = {
+communityUrl: communityUrl,
+taskRewards: taskRewards
+};
+if (newPin && newPin.length === 6) {
+payload.adminPin = newPin;
+showToast("Novo PIN ADM guardado com sucesso!", "key");
+}
+const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
+await updateDoc(settingsRef, payload);
+showToast("Configurações globais atualizadas!", "save");
+};
+// Switch ADM Inner Tabs
+window.switchAdminTab = function(tab) {
+['users', 'packages', 'payments', 'deposits', 'settings'].forEach(t => {
+document.getElementById(⁠adm-view-${t}⁠).classList.add('hidden');
+document.getElementById(⁠adm-tab-${t}-btn⁠).className = "py-2 rounded-lg text-gray-400";
+});
+document.getElementById(⁠adm-view-${tab}⁠).classList.remove('hidden');
+document.getElementById(⁠adm-tab-${tab}-btn⁠).className = "py-2 rounded-lg bg-gold-500 text-dark-900";
+};
+// Helper Copy & Toast Functions
+window.copyToClipboard = function(text, label) {
+const input = document.createElement('input');
+input.value = text;
+document.body.appendChild(input);
+input.select();
+document.execCommand('copy');
+document.body.removeChild(input);
+showToast(⁠${label} copiado!⁠, "copy");
+};
+function showToast(msg, icon = 'info-circle') {
+const container = document.getElementById('toast-container');
+const toast = document.createElement('div');
+toast.className = 'glass-card p-3 rounded-2xl flex items-center gap-3 border border-gold-500/30 text-xs text-white shadow-xl animate-bounce';
+toast.innerHTML = ⁠<i class="fas fa-${icon} text-gold-400 text-sm"></i> <span>${msg}</span>⁠;
+container.appendChild(toast);
+setTimeout(() => toast.remove(), 3500);
+}
+// Init App on Window Load
+window.addEventListener('DOMContentLoaded', () => {
+initAuth();
+});
+</script>
+</body>
+</html>
